@@ -29,6 +29,8 @@ parser.add_argument('-crx', '--command-regex',
 parser.add_argument('-w', '--watch-new', help='watch for new processes that match --command. '
                                               '(run forever)', action='store_true')
 parser.add_argument('--to', help='email address to send to [+]', action='append', metavar='EMAIL_ADDRESS')
+parser.add_argument('--id', help='pushover user id [+]', action='append', metavar='USER_ID')
+parser.add_argument('--t', help='pushover api token [+]', action='append', metavar='API_TOKEN')
 parser.add_argument('--channel', help='channel to send to [+]', action='append')
 parser.add_argument('-n', '--notify', help='send DBUS Desktop notification', action='store_true')
 parser.add_argument('-i', '--interval', help='how often to check on processes. (default: 15.0 seconds)',
@@ -85,6 +87,14 @@ if args.notify:
         sys.exit(1)
     except:
         logging.exception(exception_message)
+        sys.exit(1)
+
+if args.id and args.t:
+    try:
+        import communicate.pushover
+        comms.append((communicate.pushover, {'user_id': args.id, 'api_token': args.t}))
+    except:
+        logging.exception("Failed to setup Pushover.")
         sys.exit(1)
 
 
